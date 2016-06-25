@@ -248,9 +248,9 @@ function arrangeCircles(circles, isLast){
 // delaunay triangulation
 // points : an array of Point
 
-// reference of algorithm and processing code
+// To implement the Delaunay triangulation, I referred to the following page
+// (in Japanese) by Tercel.  Thanks for helpful description of algorithm.  
 // http://tercel-sakuragaoka.blogspot.jp/2011/06/processingdelaunay.html
-
 function delaunay(points){
     function addElementToRedundanciesMap(set, tri){
         if(tri.key in set){
@@ -401,7 +401,7 @@ var Triangle = function(p1, p2, p3){
 }
 Triangle.prototype = {
     // for delaunay : begin
-    _getKey : function(){  // 連想配列のキーに用いる
+    _getKey : function(){
         var r = [this.p1.idx, this.p2.idx, this.p3.idx];
         r.sort();
         return r.join("_");
