@@ -538,10 +538,10 @@ Circle.prototype = {
     detectSurrounded : function(){
         this.isSurrounded = true;
         for(var idx in this.verticeIndexCounter){
-          if(this.verticeIndexCounter[idx] != 2){
-            this.isSurrounded = false;
-            break;
-          }
+            if(this.verticeIndexCounter[idx] != 2){
+                this.isSurrounded = false;
+                break;
+            }
         }
         this.verticeIndexCounter = {};
     },
@@ -559,14 +559,23 @@ Circle.prototype = {
     removeInvalidCircles : function(){
         if( ! this.isSurrounded){
             this._sortCirclesByAngle();
-            
-            var idx = this.circles.length - 1;
-            if(idx > 0 && hasLargeAngle(this.o, this.circles[idx].o, this.circles[idx - 1].o)){
-                if( ! this.circles[idx].isSurrounded) this.circles.pop();
+
+            var invalid_idx = [];
+            for(var i = this.circles.length - 1; i >= 0; i--){
+                var j = i == 0 ? this.circles.length - 1 : i - 1;
+                if(this.circles[i].isSurrounded || this.circles[j].isSurrounded) continue;
+                
+                var idx = hasLargeAngle(this.o, this.circles[i].o, this.circles[j].o, i, j);
+                if(idx >= 0 && (! this.circles[idx].isSurrounded)) invalid_idx.push(idx);
             }
-            if(this.circles.length > 1
-               && hasLargeAngle(this.o, this.circles[0].o, this.circles[1].o)){
-                if( ! this.circles[0].isSurrounded) this.circles.shift();
+            
+            if(invalid_idx.length > 1){
+                invalid_idx.sort();
+                for(var i = invalid_idx.length - 1; i >= 0; i--){
+                    this.circles.splice(invalid_idx[i], 1);
+                }
+            } else if(invalid_idx.length > 0){
+                this.circles.splice(invalid_idx[i], 1);
             }
         }
     },
@@ -727,14 +736,16 @@ function findFootOfPerpendicularForGivenLine(o, line){
 // tests if a triangle has large angle at the vertex p1 or p2
 // large angle = the cosine value is lower than _opt.large_angle_threshold
 // o, p1, p2 : Point (vertex of a triangle)
+// i, j : index
 // returns : true if a large angle detected
-function hasLargeAngle(o, p1, p2){
+function hasLargeAngle(o, p1, p2, i, j){
     var d1 = o.dist(p1);
     var d2 = o.dist(p2);
     var d3 = p1.dist(p2);
-    
-    return findCos(d2, d3, d1) < _opt.large_angle_threshold
-      || findCos(d1, d3, d2) < _opt.large_angle_threshold;
+
+    if(findCos(d2, d3, d1) < _opt.large_angle_threshold) return j;  // p2 is invalid
+    if(findCos(d1, d3, d2) < _opt.large_angle_threshold) return i;  // p1 is invalid
+    return -1;
 }
 // ------------------------------------------------
 // law of cosines
