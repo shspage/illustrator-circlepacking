@@ -1,6 +1,6 @@
 illustrator-circlepacking
 ======================
-[readme in Japanese](https://github.com/shspage/illustrator-circlepacking/raw/master/readme_ja.md) 
+[readme in Japanese](hhttps://github.com/shspage/illustrator-circlepacking/blob/master/readme_ja.md) 
 
 **Use Download button (on the right side of this page) to download ZIP file.**  
 **If you use right click on each file to save, you'll get an HTML file.**
