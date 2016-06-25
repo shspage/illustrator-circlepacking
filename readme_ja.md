@@ -63,7 +63,7 @@ Illustrator CS3, CC2015.3 で動作確認しました。
 
 
 ## 参考にしたウェブページ
-ドロネー三角形分割を実装するにあたり、以下のTercelさんのページが大変参考になりました。ありがとうございます。アルゴリズムの分かりやすい説明と、processin用のサンプルコードがあります。  
+ドロネー三角形分割を実装するにあたり、以下の Tercel さんのページが大変参考になりました。ありがとうございます。アルゴリズムの分かりやすい説明と、processing 用のサンプルコードがあります。  
 [http://tercel-sakuragaoka.blogspot.jp/2011/06/processingdelaunay.html](http://tercel-sakuragaoka.blogspot.jp/2011/06/processingdelaunay.html)
 
 ----------------------
