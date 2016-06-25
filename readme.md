@@ -7,7 +7,7 @@ illustrator-circlepacking
 
 This is a script for Adobe Illustrator that draws non overlapping tangent circles, in Euclidean geometry.
 
-![desc_circlepack01](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack01.png)
+![desc_circlepack01a](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack01a.png)
 
 **USAGE**: Select a rectangle path or circles, and run this script.
 

@@ -8,7 +8,7 @@ illustrator-circlepacking
 サークルパッキングというと↓の図じゃないような色んな定義とか想像する絵柄があるかもしれませんが、ここでは互いに余計な隙間も重なりもなく接した状態の複数の円がある状態とします。これをデザインなどに活用することを目的としています。  
 Illustrator CS3, CC2015.3 で動作確認しました。
 
-![desc_circlepack01](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack01.png)
+![desc_circlepack01a](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack01a.png)
 
 **使い方**: 外枠の目安となる四角形のパスを１つ選択するか、たくさんの円形のパスを選択した状態で実行してください。
 
