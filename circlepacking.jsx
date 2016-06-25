@@ -462,7 +462,8 @@ var Circle = function(o, r, idx){
     this.idx = idx;
 
     this.circles = [];
-    this.verticeIndexCounter = {};
+    this.verticeIndexCounter = {};  // key:Point.idx, value:Point.idx or -1
+    this.circleIdxs = {};  // key:Circle.idx, value:index in this.circles
 
     this.isSurrounded = false;
     this.angle = 0;
@@ -474,12 +475,15 @@ var Circle = function(o, r, idx){
 }
 Circle.prototype = {
     _addIdx : function(idx1, idx2){
-        this._addVerticeIndexCounter(idx1);
-        this._addVerticeIndexCounter(idx2);
+        this._addVerticeIndexCounter(idx1, idx2);
+        this._addVerticeIndexCounter(idx2, idx1);
     },
-    _addVerticeIndexCounter : function(idx){
-        if( ! (idx in this.verticeIndexCounter)) this.verticeIndexCounter[idx] = 0;
-        this.verticeIndexCounter[idx]++;
+    _addVerticeIndexCounter : function(idx1, idx2){
+        if(idx1 in this.verticeIndexCounter){
+            this.verticeIndexCounter[idx1] = -1;
+        } else {
+            this.verticeIndexCounter[idx1] = idx2;
+        }
     },
     addTriangle : function(t, circles){
         if(t.p1.idx == this.idx){
@@ -494,6 +498,7 @@ Circle.prototype = {
         for(var idx in this.verticeIndexCounter){
             var circle = circles[idx];
             this.circles.push(circle);
+            this.circleIdxs[idx] = this.circles.length - 1;
         }
     },
     findO : function(){
@@ -538,35 +543,30 @@ Circle.prototype = {
     detectSurrounded : function(){
         this.isSurrounded = true;
         for(var idx in this.verticeIndexCounter){
-            if(this.verticeIndexCounter[idx] != 2){
+            if(this.verticeIndexCounter[idx] >= 0){
                 this.isSurrounded = false;
                 break;
             }
         }
-        this.verticeIndexCounter = {};
-    },
-    _sortCirclesByAngle : function(){
-        for(var i = 0, iEnd = this.circles.length; i < iEnd; i++){
-            var circle = this.circles[i];
-            circle.angle = getAngle(this.o, circle.o);
-        }
-        this.circles.sort(function(a, b){
-            if(a.angle < b.angle) return -1;
-            if(a.angle > b.angle) return 1;
-            return 0;
-        });
     },
     removeInvalidCircles : function(){
         if( ! this.isSurrounded){
-            this._sortCirclesByAngle();
-
             var invalid_idx = [];
-            for(var i = this.circles.length - 1; i >= 0; i--){
-                var j = i == 0 ? this.circles.length - 1 : i - 1;
-                if(this.circles[i].isSurrounded || this.circles[j].isSurrounded) continue;
+            
+            for(var i = 0, iEnd = this.circles.length; i < iEnd; i++){
+                var c = this.circles[i];
                 
-                var idx = hasLargeAngle(this.o, this.circles[i].o, this.circles[j].o, i, j);
-                if(idx >= 0 && (! this.circles[idx].isSurrounded)) invalid_idx.push(idx);
+                if(c.idx in this.verticeIndexCounter && (! c.isSurrounded)){
+                    var idx1 = this.verticeIndexCounter[c.idx];  // Circle.idx
+                    if(idx1 >= 0){
+                        // index in this.circles
+                        var other_idx = this.circleIdxs[idx1];
+                        
+                        if(hasLargeAngle(this.o, this.circles[other_idx].o, c.o)){
+                            invalid_idx.push(i);
+                        }
+                    }
+                }
             }
             
             if(invalid_idx.length > 1){
@@ -591,11 +591,6 @@ Circle.prototype = {
         }
         return max_dist_err_squared;
     },
-    /* getAngle : function(p){
-        var dx = p.x - this.o.x;
-        var dy = p.y - this.o.y;
-        return Math.atan2(dy, dx);
-    }, */
     toString : function(){
         return "Circle[" + this.idx + "]";
     }
@@ -733,19 +728,16 @@ function findFootOfPerpendicularForGivenLine(o, line){
     return new Point(o.x - d * line[0], o.y - d * line[1]);
 }
 // ------------------------------------------------
-// tests if a triangle has large angle at the vertex p1 or p2
+// tests if a triangle has large angle at the vertex p1
 // large angle = the cosine value is lower than _opt.large_angle_threshold
 // o, p1, p2 : Point (vertex of a triangle)
-// i, j : index
-// returns : true if a large angle detected
-function hasLargeAngle(o, p1, p2, i, j){
+// returns : true if there's large angle at p1
+function hasLargeAngle(o, p1, p2){
     var d1 = o.dist(p1);
     var d2 = o.dist(p2);
     var d3 = p1.dist(p2);
 
-    if(findCos(d2, d3, d1) < _opt.large_angle_threshold) return j;  // p2 is invalid
-    if(findCos(d1, d3, d2) < _opt.large_angle_threshold) return i;  // p1 is invalid
-    return -1;
+    return findCos(d2, d3, d1) < _opt.large_angle_threshold;
 }
 // ------------------------------------------------
 // law of cosines
