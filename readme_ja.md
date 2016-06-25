@@ -23,7 +23,7 @@ Illustrator CS3, CC2015.3 で動作確認しました。
 
 ## 警告！
 **ExtendScript Toolkit** でスクリプトを開いて実行することを強く強くおすすめいたします！  
-なぜならキャンセルボタンがあるので途中で止めることができるからです。また、コンソールパレットで誤差が収束する様子も見ることができます。Illustrator のスクリプトメニューから実行した場合、**条件が悪いと、Illustrator を強制終了するしか止める方法がなくなる恐れがあります**。
+なぜならキャンセルボタンがあるので途中で止めることができるからです。また、コンソールパレットで誤差が収束する様子も見ることができます。Illustrator のスクリプトメニューから実行した場合、**条件が悪いと、Illustrator を強制終了するしか止める方法がなくなる恐れがあります**。  
 ![desc_circlepack05b](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack05b.png)
 
 
