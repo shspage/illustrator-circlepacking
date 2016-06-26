@@ -16,7 +16,7 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.0.1
+// ver.1.0.2
 
 var _opt = {
     number_of_random_points : 100,  // in random point mode
@@ -131,7 +131,7 @@ function distributeRandomPointsInRect(frame, count, min_dist){
     
     var min_dist2 = min_dist * min_dist;
     var gb = frame.geometricBounds;
-    rect = { left:gb[0], top:gb[1], right:gb[2], bottom:gb[3],
+    var rect = { left:gb[0], top:gb[1], right:gb[2], bottom:gb[3],
         width:gb[2] - gb[0], height:gb[1] - gb[3] };
     
     for(var i = 0; i < count; i++){
