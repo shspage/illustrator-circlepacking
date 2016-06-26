@@ -101,13 +101,8 @@ function getInitialPoints(){
         
     } else if(sel.length == 1){
        // random point mode
-        var rect_path = sel[0];
-        if(rect_path.typename == "PathItem"){
-            points = distributeRandomPointsInRect(
-                rect_path, _opt.number_of_random_points, _opt.min_initial_radius * 2);
-        } else {
-            alert("ERROR\nSelected object is not a path.");
-        }
+        points = distributeRandomPointsInRect(
+            sel[0], _opt.number_of_random_points, _opt.min_initial_radius * 2);
     } else {
         // selected circles mode
         var paths = extractPaths(sel);
@@ -362,6 +357,14 @@ Point.prototype = {
     eq : function(p){  // p : point
         return this.x == p.x && this.y == p.y;
     },
+    set : function(x, y){
+        this.x = x;
+        this.y = y;
+    },
+    setP : function(p){  // p : point
+        this.x = p.x;
+        this.y = p.y;
+    },
     dist2 : function(p){  // p : point
         var dx = this.x - p.x;
         var dy = this.y - p.y;
@@ -469,9 +472,7 @@ var Circle = function(o, r, idx){
     this.angle = 0;
 
     this.tmpR = 0;
-    this.tmpRLen = 0;
     this.tmpO = new Point(0, 0);
-    this.tmpOLen = 0;
 }
 Circle.prototype = {
     _addIdx : function(idx1, idx2){
@@ -504,41 +505,29 @@ Circle.prototype = {
     findO : function(){
         var x = 0;
         var y = 0;
-        for(var i = 0, iEnd = this.circles.length; i < iEnd; i++){
+        var len = this.circles.length;
+        for(var i = 0, iEnd = len; i < iEnd; i++){
             var circle = this.circles[i];
-            var t = (getAngle(this.o, circle.o) + Math.PI);  // % _WPI;
+            var t = getAngle(circle.o, this.o);
             x += Math.cos(t) * (this.r + circle.r) + circle.o.x;
             y += Math.sin(t) * (this.r + circle.r) + circle.o.y;
         }
-        this.tmpO.x += x;
-        this.tmpO.y += y;
-        this.tmpOLen++;
+        this.tmpO.set(x / len, y / len);
     },
     fixO : function(){
-        if(this.tmpOLen > 0){
-            var len = this.tmpOLen * this.circles.length;
-            this.o.x = this.tmpO.x / len;
-            this.o.y = this.tmpO.y / len;
-        }
-        this.tmpO.x = 0;
-        this.tmpO.y = 0;
-        this.tmpOLen = 0;
+        this.o.setP(this.tmpO);
     },
     findR : function(){
         var totalLen = 0;
-        for(var i = 0, iEnd = this.circles.length; i < iEnd; i++){
+        var len = this.circles.length;
+        for(var i = 0; i < len; i++){
             var circle = this.circles[i];
             totalLen += circle.o.dist(this.o) - circle.r;
         }
-        this.tmpR += totalLen;
-        this.tmpRLen++;
+        this.tmpR = totalLen / len;
     },
     fixR : function(){
-        if(this.tmpRLen > 0){
-            this.r = this.tmpR / (this.tmpRLen * this.circles.length);
-        }
-        this.tmpR = 0;
-        this.tmpRLen = 0;
+        this.r = this.tmpR;
     },
     detectSurrounded : function(){
         this.isSurrounded = true;
@@ -571,7 +560,6 @@ Circle.prototype = {
             
             if(invalid_idx.length > 1){
                 invalid_idx.sort();
-                invalid_idx.reverse();
                 for(var i = invalid_idx.length - 1; i >= 0; i--){
                     this.circles.splice(invalid_idx[i], 1);
                 }
