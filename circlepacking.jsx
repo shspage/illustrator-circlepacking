@@ -506,7 +506,7 @@ Circle.prototype = {
         var x = 0;
         var y = 0;
         var len = this.circles.length;
-        for(var i = 0, iEnd = len; i < iEnd; i++){
+        for(var i = 0; i < len; i++){
             var circle = this.circles[i];
             var t = getAngle(circle.o, this.o);
             x += Math.cos(t) * (this.r + circle.r) + circle.o.x;
