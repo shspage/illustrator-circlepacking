@@ -571,6 +571,7 @@ Circle.prototype = {
             
             if(invalid_idx.length > 1){
                 invalid_idx.sort();
+                invalid_idx.reverse();
                 for(var i = invalid_idx.length - 1; i >= 0; i--){
                     this.circles.splice(invalid_idx[i], 1);
                 }
