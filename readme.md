@@ -56,8 +56,8 @@ Assuming the drawn triangles are ideal for packing (though it never be), it dete
 
 
 ## todo
+Implementing Delaunay refinement algorithm.  
 Doing this in Hyperbolic geometry.
-
 
 ## references
 To implement the Delaunay triangulation, I referred to the following page (in Japanese) by Tercel.  Thanks for helpful description of algorithm.  
