@@ -16,6 +16,8 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
+// ver.1.0.1
+
 var _opt = {
     number_of_random_points : 100,  // in random point mode
     min_initial_radius : 4,         // in random point mode
@@ -23,10 +25,10 @@ var _opt = {
     stroke_width : 0.5,
 
     // Perhaps you don't need to change the followings
-    max_dist_err_threshold : 2.0,  // 2.0 seemed good enough
+    max_dist_err_threshold : 0.2,  // 2.0 seemed good enough
     max_dist_err_last_phase_threshold : 5.5,
     normal_loop_count : 50,
-    last_phase_loop_count : 500,  // re-configured below
+    last_phase_loop_count : 500,  // re-configured at below
     large_angle_threshold : Math.cos(Math.PI * 2 / 3),
     just_show_initial_status : false
 }
