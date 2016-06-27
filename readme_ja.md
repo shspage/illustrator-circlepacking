@@ -28,10 +28,14 @@ Illustrator CS3, CC2015.3 で動作確認しました。
 
 
 ## 誤差表示
-実行中、"**max dist error**" という値が ExtendScript Toolkit のコンソールに表示されます。  
+実行中、"**max dist err**" という値が ExtendScript Toolkit のコンソールに表示されます。  
 これは現在の円と円との間隔の最大値です。もちろん 0.0 が理想的ですが、2.0以下であれば問題ないように思われます。
 この値が増え続けたり、収束する様子が見られなかったりした場合は、何か悪い状態になっていると思われますので、
 スクリプトを止めたほうが良いです。また、最終的な値が大きい場合は残念な箇所があるはずです。
+
+最大の誤差がある円は、下の画像のように赤く表示されます。この色づけを望まない場合は、スクリプトの冒頭部分を編集して、
+"**mark_with_red_for_max_dist_err_circle**" の値を **false** に変更してください。 (ver.1.0.3)  
+![desc_circlepack06](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack06.png)
 
 
 ## 作例

@@ -16,7 +16,7 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.0.2
+// ver.1.0.3
 
 var _opt = {
     number_of_random_points : 100,  // in random point mode
@@ -30,6 +30,10 @@ var _opt = {
     normal_loop_count : 50,
     last_phase_loop_count : 500,  // re-configured at below
     large_angle_threshold : Math.cos(Math.PI * 2 / 3),
+
+    // marks with red for the circle which has max error
+    mark_with_red_for_max_dist_err_circle : true,
+    // draws delaunay triangles and circles without arranging
     just_show_initial_status : false
 }
 _opt.last_phase_loop_count = Math.max(
@@ -50,6 +54,7 @@ function circlePackMain(){
     var loopTimes = 0;
     var isLast = false;
     var max_dist_err = _opt.max_dist_err_threshold + 1;
+    var max_dist_err_idx = -1;
     
     while(max_dist_err > _opt.max_dist_err_threshold){
         loopTimes++;
@@ -62,9 +67,13 @@ function circlePackMain(){
 
         // check errors
         var max_dist_err_squared = 0;
+        max_dist_err_idx = -1;
         for(var ci = 0, ciEnd = circles.length; ci < ciEnd; ci++){
             var error = circles[ci].verifyR();
-            if(error > max_dist_err_squared) max_dist_err_squared = error;
+            if(error > max_dist_err_squared){
+                max_dist_err_squared = error;
+                max_dist_err_idx = circles[ci].idx;
+            }
         }
         max_dist_err = Math.sqrt(max_dist_err_squared)
         $.writeln("-- max_dist_err=" + max_dist_err);
@@ -82,9 +91,18 @@ function circlePackMain(){
     }
 
     // draws circles
-    for(var i = 0, iEnd = circles.length; i < iEnd; i++){
-        var c = circles[i];
-        drawCircle(c.o, c.r);
+    if(_opt.mark_with_red_for_max_dist_err_circle){
+        $.writeln("-- max dist err index = " + max_dist_err_idx);
+        
+        for(var i = 0, iEnd = circles.length; i < iEnd; i++){
+            var c = circles[i];
+            drawCircle2(c, c.idx == max_dist_err_idx);
+        }
+    } else {
+        for(var i = 0, iEnd = circles.length; i < iEnd; i++){
+            var c = circles[i];
+            drawCircle(c.o, c.r);
+        }
     }
 
     // shows elapsed time
@@ -614,6 +632,21 @@ function getBlack(){
     return col;
 }
 // ------------------------------------------------
+// returns red color object
+function getRed(){
+    var col;
+    if(activeDocument.documentColorSpace == DocumentColorSpace.CMYK){
+        col = new CMYKColor();
+        col.magenta = 100; col.yellow = 100;
+        col.cyan = 0; col.black = 0;
+        return col;
+    } else {  // RGB
+        col = new RGBColor();
+        col.red = 255; col.green = 0; col.blue = 0;
+        return col;
+    }
+}
+// ------------------------------------------------
 // draws a polygon
 // points : an array of coordinates [x, y]([float, float])
 // returns : a pathitem drawn
@@ -639,6 +672,17 @@ function drawCircle(o, r){
         o.y + r, o.x - r, r*2, r*2);
     circle.filled = false;
     circle.strokeColor = getBlack();
+    circle.strokeWidth = _opt.stroke_width;
+}
+// ------------------------------------------------
+// c : Circle
+// has_max_err : bool
+function drawCircle2(c, has_max_err){
+    var r = c.r;
+    var circle = app.activeDocument.activeLayer.pathItems.ellipse(
+        c.o.y + r, c.o.x - r, r*2, r*2);
+    circle.filled = false;
+    circle.strokeColor = has_max_err ? getRed() : getBlack();
     circle.strokeWidth = _opt.stroke_width;
 }
 // ------------------------------------------------
