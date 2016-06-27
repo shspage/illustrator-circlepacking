@@ -33,6 +33,9 @@ The circle which has "max dist err" is marked with red like the following image.
 If you don't like this coloring, edit the beginning part of the script to set "**mark_with_red_for_max_dist_err_circle**" to **false**. (ver.1.0.3)  
 ![desc_circlepack06](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack06.png)
 
+If you feel the error is still noticeable, you can select drawn circles and run this script again to continue adjusting process.
+(Make sure not to select the rectangle frame at this time.)
+
 
 ## example
 This is an example image which applied path-offset effect after generated circles.

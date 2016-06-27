@@ -37,6 +37,9 @@ Illustrator CS3, CC2015.3 で動作確認しました。
 "**mark_with_red_for_max_dist_err_circle**" の値を **false** に変更してください。 (ver.1.0.3)  
 ![desc_circlepack06](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack06.png)
 
+誤差がまだ目立つと感じた場合は、描かれた円を選択して再度実行することで調整工程を続行することができます。  
+（このとき四角い枠は選択しないよう注意してください。）
+
 
 ## 作例
 以下の画像は、円を描画してから「効果＞パス＞オフセット」を適用したものです。
