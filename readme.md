@@ -30,7 +30,7 @@ It means the maximum distance between circles. Of course 0.0 is ideal.  But 2.0 
 If it keeps growing or is seemed hard to converge, something is wrong.  You should abort the process.
 
 The circle which has "max dist err" is marked with red like the following image.
-If you don't like this coloring, edit the begginning part of the script to set "**mark_with_red_for_max_dist_err_circle**" to **false**. (ver.1.0.3)  
+If you don't like this coloring, edit the beginning part of the script to set "**mark_with_red_for_max_dist_err_circle**" to **false**. (ver.1.0.3)  
 ![desc_circlepack06](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack06.png)
 
 
