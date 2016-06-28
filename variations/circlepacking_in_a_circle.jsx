@@ -17,7 +17,7 @@
 // See the LICENSE file for details.
 
 // ver.1.0.3+
-// in a circle variation ver.1.1
+// in a circle variation ver.1.1.1
 
 var _opt = {
     number_of_random_points : 50,  // in random point mode
@@ -168,7 +168,7 @@ function getInitialPoints(){
         _radius = (rect.right - rect.left) / 2;
         _r2 = _radius * _radius;
         
-        var radius_limit = _radius * 0.49;
+        var radius_limit = _radius * 0.99;
         for(var i = 0, iEnd = points.length; i < iEnd; i++){
             if(points[i].r > radius_limit){
                 points.splice(i, 1);
