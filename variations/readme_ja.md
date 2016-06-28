@@ -5,7 +5,7 @@ illustrator-circlepacking : variations
 
 ![desc_circlepack_in_a_circle](https://github.com/shspage/illustrator-circlepacking/raw/master/variations/img/desc_circlepack_in_a_circle.png)
 
-**使い方** 円形のパスを１つ（または、一度描かれた円のかたまり？）を選んで、スクリプトを実行してください。
+**使い方** : 円形のパスを１つ（または、一度描かれた円のかたまり？）を選んで、スクリプトを実行してください。
 
 この改変版は、調整時の移動範囲に円の外に出ないような制限を加えただけのものです。
 なので、座標の計算などはまだユークリッド幾何学的にやっています。

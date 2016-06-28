@@ -17,7 +17,7 @@
 // See the LICENSE file for details.
 
 // ver.1.0.3+
-// in a circle variation
+// in a circle variation ver.1.1
 
 var _opt = {
     number_of_random_points : 50,  // in random point mode
@@ -152,8 +152,23 @@ function getInitialPoints(){
         }
  
         // if the outer circle is selected, removes it
-        var rect = getRectForPoints(points);
-        var radius_limit = (rect.right - rect.left) * 0.49;
+        var gb = paths[0].geometricBounds;
+        var rect = { left:gb[0], top:gb[1], right:gb[2], bottom:gb[3] };
+        
+        for(var i = 1, iEnd = paths.length; i < iEnd; i++){
+            var gb = paths[i].geometricBounds;
+            if(gb[0] < rect.left) rect.left = gb[0];
+            if(gb[2] > rect.right) rect.right = gb[2];
+            if(gb[1] > rect.top) rect.top = gb[1];
+            if(gb[3] < rect.bottom) rect.bottom = gb[3];
+        }
+        
+        _origin = new Point((rect.left + rect.right)/2,
+                            (rect.top + rect.bottom)/2);
+        _radius = (rect.right - rect.left) / 2;
+        _r2 = _radius * _radius;
+        
+        var radius_limit = _radius * 0.49;
         for(var i = 0, iEnd = points.length; i < iEnd; i++){
             if(points[i].r > radius_limit){
                 points.splice(i, 1);
@@ -746,6 +761,7 @@ function drawCircle(o, r){
 // has_max_err : bool
 function drawCircle2(c, has_max_err){
     var r = c.r;
+	if(isNaN(r)){ r = 10; c.o.x = 0; c.o.y = 0; }
     var circle = app.activeDocument.activeLayer.pathItems.ellipse(
         c.o.y + r, c.o.x - r, r*2, r*2);
     circle.filled = false;

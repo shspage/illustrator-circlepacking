@@ -6,7 +6,7 @@ illustrator-circlepacking : variations
 
 ![desc_circlepack_in_a_circle](https://github.com/shspage/illustrator-circlepacking/raw/master/variations/img/desc_circlepack_in_a_circle.png)
 
-**USAGE** Select a circle (or already drawn circles in a circle), and run this script.
+**USAGE** : Select a circle (or already drawn circles in a circle), and run this script.
 
 In this variation, I added some restriction in moving range to the original script.
 It is still based on Euclidean geometry.
