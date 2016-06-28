@@ -761,7 +761,6 @@ function drawCircle(o, r){
 // has_max_err : bool
 function drawCircle2(c, has_max_err){
     var r = c.r;
-	if(isNaN(r)){ r = 10; c.o.x = 0; c.o.y = 0; }
     var circle = app.activeDocument.activeLayer.pathItems.ellipse(
         c.o.y + r, c.o.x - r, r*2, r*2);
     circle.filled = false;
