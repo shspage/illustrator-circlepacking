@@ -18,6 +18,15 @@ illustrator-circlepacking : variations
 このような使い方を想定したため、この際に外側の円が一緒に選択されていた場合は、選択から除外する処理も追加しています。
 
 
+## circlepacking_in_a_circle_web.js
+
+![desc_circlepack_in_a_circle_web](https://github.com/shspage/illustrator-circlepacking/raw/master/variations/img/desc_circlepack_in_a_circle_web.png)
+
+circlepacking_in_a_circle.jsx を改変し、HTML5 canvas 上に描画するようにしたものです。  
+収束のようすをアニメーションします。  
+[実際の動作](http://shspage.com/ex/circlepacking_in_a_circle/index.html)をご覧ください。
+
+
 ----------------------
 Copyright(c) 2016 Hiroyuki Sato  
 [https://github.com/shspage](https://github.com/shspage)  

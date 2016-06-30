@@ -20,6 +20,15 @@ Considering the usage like this, I added the process that excludes the outer cir
 So you can select it with circles.
 
 
+## circlepacking_in_a_circle_web.js
+
+![desc_circlepack_in_a_circle_web](https://github.com/shspage/illustrator-circlepacking/raw/master/variations/img/desc_circlepack_in_a_circle_web.png)
+
+This is a variation of circlepacking_in_a_circle.jsx which draws on HTML5 canvas.  
+You can see the transition of convergence with its animation.  
+[See it in action](http://shspage.com/ex/circlepacking_in_a_circle/index.html).
+
+
 ----------------------
 Copyright(c) 2016 Hiroyuki Sato  
 [https://github.com/shspage](https://github.com/shspage)  

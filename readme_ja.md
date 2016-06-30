@@ -47,6 +47,12 @@ Illustrator CS3, CC2015.3 で動作確認しました。
 ![desc_circlepack04a](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack04a.png)
 
 
+## バリエーション
+variations フォルダー以下に、様々な改変版を置きました。下図はブラウザで動作するバージョンです。
+
+![desc_circlepack_in_a_circle_web](https://github.com/shspage/illustrator-circlepacking/raw/master/variations/img/desc_circlepack_in_a_circle_web.png)
+
+
 ## アルゴリズム
 現在の方法がベストかは分かりません。ただ今のところ色々試した中で最も速く、精確な結果を出しています。たぶん数学的にもっと説得力のある方法があるとは思うのですが。
 

@@ -43,6 +43,12 @@ This is an example image which applied path-offset effect after generated circle
 ![desc_circlepack04a](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack04a.png)
 
 
+## variations
+There're some variations inside "variations" folder.  The following image is a web browser version.
+
+![desc_circlepack_in_a_circle_web](https://github.com/shspage/illustrator-circlepacking/raw/master/variations/img/desc_circlepack_in_a_circle_web.png)
+
+
 ## algorithm
 I don't know if this is the best way.  But it produces the fastest and the most accurate result for now.  I guess there're more mathematically convincing methods.
 
