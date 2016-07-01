@@ -16,7 +16,7 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.0.3
+// ver.1.1.0
 
 var _opt = {
     number_of_random_points : 100,  // in random point mode
@@ -418,9 +418,6 @@ var Triangle = function(p1, p2, p3){
     this.r2 = circumCircle.r * circumCircle.r;
     this.key = this._getKey();
     this.overlap;
-    
-    this.line1 = defline2(p1, p2);
-    this.line2 = defline2(p2, p3);
 }
 Triangle.prototype = {
     // for delaunay : begin
@@ -443,26 +440,14 @@ Triangle.prototype = {
     // for delaunay : end
     
     // for circle packing : start
-    _findIncircleCenter : function(){
-        var t1 = getAngle(this.p2, this.p1);
-        var t2 = getAngle(this.p2, this.p3);
-        var t3 = getAngle(this.p3, this.p1);
-        
-        var t = (t1 + t2) % _WPI
-          var line1 = getAngleLine(this.p2, t / 2);
-        t = (t2 + Math.PI + t3) % _WPI;
-        var line2 = getAngleLine(this.p3, t / 2);
-        
-        var o = getIntersection(line1, line2);
-        return o;
-    },
     findTmpRadiusForEachVertex : function(){
-        var o = this._findIncircleCenter();
-        var foot1 = findFootOfPerpendicularForGivenLine(o, this.line1);
-        var foot2 = findFootOfPerpendicularForGivenLine(o, this.line2);
-        this.p1.tmpRs.push(foot1.dist(this.p1));
-        this.p2.tmpRs.push(foot1.dist(this.p2));
-        this.p3.tmpRs.push(foot2.dist(this.p3));
+        var d1 = this.p1.dist(this.p2);
+        var d2 = this.p2.dist(this.p3);
+        var d3 = this.p3.dist(this.p1);
+        var r1 = (d1 + d3 - d2) / 2;
+        this.p1.tmpRs.push(r1);
+        this.p2.tmpRs.push(d2 - r1);
+        this.p3.tmpRs.push(d3 - r1);
     },
     // for circle packing : end
     
@@ -710,57 +695,6 @@ function getAngle(p1, p2) {
     var x = p2.x - p1.x;
     var y = p2.y - p1.y;
     return Math.atan2(y, x);
-}
-// ------------------------------------------------
-// equation of the line drawn through p1 and p2
-// returns : [a, b, c] for ax + by + c 
-function defline(p1, p2){
-    var a = p1.y - p2.y;
-    var b = p1.x - p2.x;
-    return [a, -b, b * p1.y - a * p1.x];
-}
-// ------------------------------------------------
-// equation of the line drawn through p1 and p2
-// returns : [a, b, c] for ax + by + c (a^2 + b^2 = 1)
-function defline2(p1, p2){
-    if(p1.x == p2.x) return [1, 0, -p1.x];
-    if(p1.y == p2.y) return [0, 1, -p1.y];
-    var a = (p2.y - p1.y)/(p2.x - p1.x);
-    var d = Math.sqrt(a * a + 1) || 0;
-    return [a/d, -1/d, (p1.y - a * p1.x)/d];
-}
-// ------------------------------------------------
-// equation of the line drawn from p1 and has angle t
-// p1 : Point
-// t : angle (radian)
-function getAngleLine(p1, t){
-    var m = 100;
-    var p2 = new Point(Math.cos(t) * m + p1.x,
-                       Math.sin(t) * m + p1.y);
-    return defline(p1, p2);
-}
-// ------------------------------------------------
-// intersection coordinate
-// p, q : line ([a, b, c] for ax + by + c)
-// returns : Point
-function getIntersection(p, q){
-    var d = p[0] * q[1] - p[1] * q[0];
-    if(d == 0){
-        $.writeln("d == 0");  // parallel
-        return [];
-    }
-    return new Point(
-        (q[2] * p[1] - p[2] * q[1]) / d,
-        (p[2] * q[0] - q[2] * p[0]) / d);
-}
-// ------------------------------------------------
-// foot of perpendicular drawn from a point to a line
-// o : Point
-// line : [a, b, c] for ax + by + c 
-function findFootOfPerpendicularForGivenLine(o, line){
-    // line : defline2(p1, p2);
-    var d = line[0] * o.x + line[1] * o.y + line[2];
-    return new Point(o.x - d * line[0], o.y - d * line[1]);
 }
 // ------------------------------------------------
 // tests if a triangle has large angle at the vertex p1
