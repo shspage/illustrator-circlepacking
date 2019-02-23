@@ -6,9 +6,13 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.1.0+
+// ver.1.2.0+
 // in a circle variation ver.1.2.0+
-// in a circle in a browser variation ver.1.1
+// in a circle in a browser variation ver.1.2
+
+// * exportSVGtoFile function requires canvas2svg.js.
+//   (Copyright (c) 2014 Gliffy Inc.
+//    https://github.com/gliffy/canvas2svg )
 
 var CirclePack;
 
@@ -45,14 +49,20 @@ var CirclePack;
     var _timer;
     var _interval;
     
+    var _circles = null;
+    var _export_url = null;
+
     var _WPI = Math.PI * 2;
     var _HPI = Math.PI / 2;
+
+    var _EXPORT_SVG_FILENAME = "output.svg";
 
     // ------------------------------------------------
     function circlePackMain(canvas){
         _canvas = canvas;
         _timer = new TimeChecker();
-       
+        _circles = null;
+
         var points = getInitialPoints();
         if(points.length < 3) return;
         
@@ -94,6 +104,7 @@ var CirclePack;
             drawText(pfx + "loop " + loopTimes + " : max err = " + max_dist_err, 10, 10, textColor);
             
             drawCircles(circles, max_dist_err_idx);
+            _circles = circles;
             
             if(isLast){
                 clearInterval(_interval);
@@ -117,21 +128,28 @@ var CirclePack;
         _canvas.getContext("2d").clearRect(0, 0, _canvas.width, _canvas.height);
     }
     // ------------------------------------------------
-    function drawCircles(circles, max_dist_err_idx){
+    function drawCircles(circles, max_dist_err_idx, as_svg){
         //if( ! _opt.just_show_initial_status) clearRect();
-        
+        var ctx = as_svg && C2S
+            ? new C2S(_canvas.width, _canvas.height)
+            : _canvas.getContext("2d");
+
         if(_opt.mark_with_red_for_max_dist_err_circle){
             console.log("-- max dist err index = " + max_dist_err_idx);
             
             for(var i = 0, iEnd = circles.length; i < iEnd; i++){
                 var c = circles[i];
-                drawCircle2(c, c.idx == max_dist_err_idx);
+                drawCircle2(ctx, c, c.idx == max_dist_err_idx);
             }
         } else {
             for(var i = 0, iEnd = circles.length; i < iEnd; i++){
                 var c = circles[i];
-                drawCircle(c.o, c.r);
+                drawCircle(ctx, c.o, c.r);
             }
+        }
+
+        if(as_svg){
+            return ctx.getSerializedSvg();
         }
     }
     // ------------------------------------------------
@@ -657,10 +675,10 @@ var CirclePack;
     // draws a circle
     // o : center (Point)
     // r : radius (float)
-    function drawCircle(o, r, strokeColor){
+    function drawCircle(ctx, o, r, strokeColor){
         if( ! strokeColor) strokeColor = "#000";
         
-        var ctx = _canvas.getContext("2d");
+        //var ctx = _canvas.getContext("2d");
         ctx.beginPath();
         ctx.arc(o.x, o.y, r, 0, _WPI, true);
         ctx.lineWidth = _opt.stroke_width;
@@ -670,9 +688,9 @@ var CirclePack;
     // ------------------------------------------------
     // c : Circle
     // has_max_err : bool
-    function drawCircle2(c, has_max_err){
+    function drawCircle2(ctx, c, has_max_err){
         var strokeColor = has_max_err ? "#f00" : "#000";
-        drawCircle(c.o, c.r, strokeColor);
+        drawCircle(ctx, c.o, c.r, strokeColor);
     }
     // ------------------------------------------------
     function drawText(txt, x, y, color){
@@ -761,8 +779,83 @@ var CirclePack;
         }
     }
     // --------------------------------------
+    function exportSVGtoFile(){
+        if(C2S && _circles){
+            try{
+                if(confirm(getMessage("export_svg_confirm"))){
+                    if(_export_url) URL.revokeObjectURL(_export_url);
+                    var svg = drawCircles(_circles, -1, true);
+                    _export_url = handleDownload(svg);
+                    alert(getMessage("exported"));
+                }
+            } catch(e){
+                console.log(e);
+                alert(getMessage("failed_to_export"));
+            }
+        } else {
+            alert(getMessage("nothing_to_export"));
+        }
+    }
+    // --------------------------------------
+    function handleDownload(text) {
+        var blob = new Blob([ text ], { "type" : "image/svg+xml" });
+        var a = document.createElement("a");
+        a.target = '_blank';
+        a.download = _EXPORT_SVG_FILENAME;
+        var url;
+        var winURL = window.URL || window.webkitURL;
+        if(winURL && winURL.createObject) {  //chrome
+            url = winURL.createObjectURL(blob);
+            a.href = url;
+            a.click();
+        } else if(window.URL && window.URL.createObjectURL) {  //firefox
+            url = window.URL.createObjectURL(blob);
+            a.href = url;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+        return url;
+    }
+    // --------------------------------------
+    function getLang(){
+        //return "en";
+        return navigator.language.startsWith("ja") ? "ja" : "en";
+    }
+    // --------------------------------------
+    function getMessage(entry){
+        var obj = _messages[entry];
+        var lang = getLang();
+
+        if(obj){
+            return obj[lang] || obj["en"].toString();
+        } else {
+            return "undefined:[" + entry + "]";
+        }
+    }
+    // --------------------------------------
+    _messages = {
+        export_svg_confirm  : {
+            "en" : "export SVG file?",
+            "ja" : "SVGファイルをエクスポートしますか？"
+        },
+        exported : {
+            "en" : "exported",
+            "ja" : "エクスポート完了"
+        },
+        failed_to_export : {
+            "en" : "failed to export",
+            "ja" : "エクスポートに失敗しました"
+        },
+        nothing_to_export : {
+            "en" : "there's nothing to export yet",
+            "ja" : "エクスポートできるものがありません"
+        }
+    }
+    // --------------------------------------
     CirclePack = {
-        draw : function(canvas){ circlePackMain(canvas); }
+        draw : function(canvas){ circlePackMain(canvas); },
+        exportSVGtoFile : exportSVGtoFile
     }
     
     //circlePackMain();
