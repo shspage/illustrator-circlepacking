@@ -10,7 +10,14 @@ This is a script for Adobe Illustrator that draws non overlapping tangent circle
 ![desc_circlepack01a](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack01a.png)
 
 **USAGE**: Select a rectangle path or circles, and run this script.
+A window with an output field and buttons will open.
 
+## buttons
+* __exec__ : starts new process.
+* __abort__ : aborts the process.
+* __close__ : closes the window.
+
+## modes
 **mode-1** : if only 1 object is selected : generates random points inside it.  
 **mode-2** : if 3 or more path is selected : arranges selected circles. (draws arranged circles **anew**)
 
@@ -19,13 +26,8 @@ You can edit the number of random points and other settings. They are at the beg
 You'll notice big circles on the edge.  Please think them like the heel of bread.
 
 
-## WARNING
-It's highly recommended that you run this script with **ExtendScript Toolkit**, so that you can interrupt to abort using cancel button.  Also you can see transition of error value while it is running. **This script can run forever in certain condition.**  
-![desc_circlepack05b](https://github.com/shspage/illustrator-circlepacking/raw/master/img/desc_circlepack05b.png)
-
-
 ## error value
-While running, this script displays "**max dist err**" in the console of ExtendScript Toolkit.
+While running, this script displays "**max dist err**" in the window.
 It means the maximum distance between circles. Of course 0.0 is ideal.  But 2.0 or lower value seemed good enough.
 If it keeps growing or is seemed hard to converge, something is wrong.  You should abort the process.
 

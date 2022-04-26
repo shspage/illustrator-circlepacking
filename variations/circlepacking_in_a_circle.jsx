@@ -6,18 +6,13 @@
 // mode-2 : if 3 or more path is selected : arranges selected circles.
 //                                          (draws arranged circles anew)
 
-// WARNING: It's highly recommended that running this script
-// with ExtendScript Toolkit. So that you can interrupt to abort
-// using cancel button.
-// Also you can see transition of error value while it is running.
-
 // Copyright(c) 2016 Hiroyuki Sato
 // https://github.com/shspage
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.1.0+
-// in a circle variation ver.1.2.0
+// ver.1.2.0+
+// in a circle variation ver.1.3.0
 
 var _opt = {
     number_of_random_points : 50,  // in random point mode
@@ -44,10 +39,19 @@ var _opt = {
     // marks with red for the circle which has max error
     mark_with_red_for_max_dist_err_circle : true,
     // draws delaunay triangles and circles without arranging
-    just_show_initial_status : false
+    just_show_initial_status : false,
+    // size of the text area in the dialog
+    edittext_width : 400,
+    edittext_height : 400
 }
 _opt.last_phase_loop_count = Math.max(
     _opt.last_phase_loop_count, _opt.number_of_random_points);
+
+var _g = {
+    win : null, // window
+    et : null,  // edittext
+    cancel : false  // true if canceled.
+}
 
 var _origin;
 var _radius;
@@ -59,10 +63,16 @@ var _HPI = Math.PI / 2;
 // ------------------------------------------------
 function circlePackMain(){
     var timer = new TimeChecker();
-   if(app.documents.length < 1) return;
+    if(app.documents.length < 1){
+        putTextln("error: no document");
+        return;
+    }
    
     var points = getInitialPoints();
-    if(points.length < 3) return;
+    if(points.length < 3){
+        putTextln("error: at least 3 points required");
+        return;
+    }
     
     var circles;
     var loopTimes = 0;
@@ -71,55 +81,67 @@ function circlePackMain(){
     var max_dist_err_idx = -1;
     
     while(max_dist_err > _opt.max_dist_err_threshold){
+        if(_g.cancel) break;
+        
         loopTimes++;
-        $.writeln("loop: " + loopTimes);
+        putTextln("loop: " + loopTimes);
         
         circles = getCirclesByTriangulation(points);
         if( _opt.just_show_initial_status) break;
+        if(_g.cancel) break;
         
         circles = arrangeCircles(circles, isLast);
-
+        if(_g.cancel) break;
+        
         // check errors
         var max_dist_err_squared = 0;
         max_dist_err_idx = -1;
         for(var ci = 0, ciEnd = circles.length; ci < ciEnd; ci++){
+            if(_g.cancel) break;
+            
             var error = circles[ci].verifyR();
             if(error > max_dist_err_squared){
                 max_dist_err_squared = error;
                 max_dist_err_idx = circles[ci].idx;
             }
         }
+        if(_g.cancel) break;
         max_dist_err = Math.sqrt(max_dist_err_squared)
-        $.writeln("-- max_dist_err=" + max_dist_err);
+        putTextln("-- max_dist_err=" + max_dist_err);
         
         if(isLast) break;
         if(max_dist_err < _opt.max_dist_err_last_phase_threshold){
             isLast = true;
-            $.writeln("#### next loop is the last phase");
+            putTextln("#### next loop is the last phase");
         }
         
         points = [];
         for(var ci = 0, ciEnd = circles.length; ci < ciEnd; ci++){
+            if(_g.cancel) break;
             points.push(circles[ci].o);
         }
+        if(_g.cancel) break;
     }
 
     // draws circles
     if(_opt.mark_with_red_for_max_dist_err_circle){
-        $.writeln("-- max dist err index = " + max_dist_err_idx);
+        putTextln("-- max dist err index = " + max_dist_err_idx);
         
         for(var i = 0, iEnd = circles.length; i < iEnd; i++){
+            if(_g.cancel) break;
             var c = circles[i];
             drawCircle2(c, c.idx == max_dist_err_idx);
         }
     } else {
         for(var i = 0, iEnd = circles.length; i < iEnd; i++){
+            if(_g.cancel) break;
             var c = circles[i];
             drawCircle(c.o, c.r);
         }
     }
 
-    // shows elapsed time
+    app.redraw();
+    if(_g.cancel) putTextln("### CANCELED ###");
     timer.showResult();
 }
 // ------------------------------------------------
@@ -178,7 +200,7 @@ function getInitialPoints(){
         }
     }
     
-    $.writeln("-- " + points.length + " points prepared");
+    putTextln("-- " + points.length + " points prepared");
     return points;
 }
 // ------------------------------------------------
@@ -203,7 +225,9 @@ function distributeRandomPointsInRect(frame, count, min_dist){
     var r = _radius - _opt.min_initial_radius;
     
     for(var i = 0; i < count; i++){
+        if(i % 100 == 0) putText(i + " ");
         while(true){
+            if(_g.cancel) break;
             var t = Math.random() * Math.PI;
             var a = Math.random() * Math.PI;
             
@@ -219,6 +243,7 @@ function distributeRandomPointsInRect(frame, count, min_dist){
             }
             if(ok) break;
         }
+        if(_g.cancel) break;
         points.push(p);
     }
     
@@ -292,7 +317,7 @@ function getCirclesByTriangulation(points){
 // circles : an array of Circle
 // isLast : true if it is the last loop
 function arrangeCircles(circles, isLast){
-    $.writeln("-- arrange: " + circles.length + " circles");
+    putTextln("-- arrange: " + circles.length + " circles");
     
     var loop_times = _opt.normal_loop_count;
     if(isLast) loop_times = _opt.last_phase_loop_count;
@@ -300,6 +325,7 @@ function arrangeCircles(circles, isLast){
     
     var i = 0;
     for(; i < loop_times; i++){
+        if(_g.cancel) break;
         c_len = circles.length;
         for(var ci = 0; ci < c_len; ci++) circles[ci].findO();
         for(var ci = 0; ci < c_len; ci++) circles[ci].fixO();
@@ -307,9 +333,9 @@ function arrangeCircles(circles, isLast){
         for(var ci = 0; ci < c_len; ci++) circles[ci].findR();
         for(var ci = 0; ci < c_len; ci++) circles[ci].fixR();
         
-        if(i > 0 && i % notify_loop_count == 0) $.write(" " + i);
+        if(i > 0 && i % notify_loop_count == 0) putText(" " + i);
     }
-    if(i > notify_loop_count) $.writeln(".");
+    if(i > notify_loop_count) putTextln(".");
     return circles;
 }
 
@@ -838,8 +864,54 @@ var TimeChecker = function(){
         ms -= (minutes * 60 * 1000);
         var seconds = Math.floor(ms / 1000);
         ms -= seconds * 1000;
-        $.writeln("END: " + hours + "h " + minutes + "m " + seconds + "s " + ms);
+        putTextln("END: " + hours + "h " + minutes + "m " + seconds + "s " + ms);
     }
 }
 // --------------------------------------
-circlePackMain();
+function putText(txt){
+    _g.et.text += txt;
+    _g.win.update();
+};
+// --------------------------------------
+function putTextln(txt){
+    _g.et.text += txt + "\n";
+    _g.win.update();
+};
+// --------------------------------------
+function main(){
+    _g.win = new Window("dialog", "circlePacking", undefined, {closeButton:true} );
+    _g.et = _g.win.add("edittext",[0, 0, _opt.edittext_width, _opt.edittext_height], "",
+                       { multiline:true, scrolling:true });
+    _g.cancel = false;
+
+    var gr = _g.win.add("group");
+    var btn_ok = gr.add("button", undefined, "exec");
+    var btn_cancel = gr.add("button", undefined, "abort");
+    var btn_close = gr.add("button", undefined, "close");
+
+    btn_ok.onClick = function(){
+        try{
+            this.enabled = false;
+            circlePackMain();
+        } catch(error){
+            alert(error);
+        }
+    };
+    btn_cancel.onClick = function(){
+        try{
+            _g.cancel = true;
+        }catch(error){
+            alert(error);
+        }
+    };
+    btn_close.onClick = function(){
+        try{
+            _g.win.close();
+        }catch(error){
+            alert(error);
+        }
+    };
+    _g.win.show();
+}
+main();
+

@@ -1,1 +1,23 @@
+# windows ----
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+[Dd]esktop.ini
+*.lnk
+
+# mac ----
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# just for me ----
+_release/
 _backup/
+*.zip
+*.ai
+*.xcf
+*ÉRÉsÅ[*
+*.bak
+*.pyc
