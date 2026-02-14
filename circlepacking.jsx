@@ -11,7 +11,7 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.2.0
+// ver.1.4.0
 
 var _opt = {
     number_of_random_points : 100,  // in random point mode
@@ -469,7 +469,7 @@ Triangle.prototype = {
         var d3 = this.p3.dist(this.p1);
         var r1 = (d1 + d3 - d2) / 2;
         this.p1.tmpRs.push(r1);
-        this.p2.tmpRs.push(d2 - r1);
+        this.p2.tmpRs.push(d1 - r1);
         this.p3.tmpRs.push(d3 - r1);
     },
     // for circle packing : end
@@ -592,7 +592,7 @@ Circle.prototype = {
                     this.circles.splice(invalid_idx[i], 1);
                 }
             } else if(invalid_idx.length > 0){
-                this.circles.splice(invalid_idx[i], 1);
+                this.circles.splice(invalid_idx[0], 1);
             }
         }
     },

@@ -6,9 +6,9 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.2.0+
-// in a circle variation ver.1.2.0+
-// in a circle in a browser variation ver.1.2
+// ver.1.4.0+
+// in a circle variation ver.1.4.0+
+// in a circle in a browser variation ver.1.4
 
 // * exportSVGtoFile function requires canvas2svg.js.
 //   (Copyright (c) 2014 Gliffy Inc.
@@ -41,6 +41,7 @@ var CirclePack;
         _opt.last_phase_loop_count, _opt.number_of_random_points);
 
     var _canvas;
+    var _context;
     
     var _origin;
     var _radius;
@@ -60,6 +61,7 @@ var CirclePack;
     // ------------------------------------------------
     function circlePackMain(canvas){
         _canvas = canvas;
+        _context = canvas.getContext("2d");
         _timer = new TimeChecker();
         _circles = null;
 
@@ -125,14 +127,14 @@ var CirclePack;
     }
     // ------------------------------------------------
     function clearRect(){
-        _canvas.getContext("2d").clearRect(0, 0, _canvas.width, _canvas.height);
+        _context.clearRect(0, 0, _canvas.width, _canvas.height);
     }
     // ------------------------------------------------
     function drawCircles(circles, max_dist_err_idx, as_svg){
         //if( ! _opt.just_show_initial_status) clearRect();
         var ctx = as_svg && C2S
             ? new C2S(_canvas.width, _canvas.height)
-            : _canvas.getContext("2d");
+            : _context;
 
         if(_opt.mark_with_red_for_max_dist_err_circle){
             console.log("-- max dist err index = " + max_dist_err_idx);
@@ -175,7 +177,7 @@ var CirclePack;
         var p, ok;
         
         var min_dist2 = min_dist * min_dist;
-        var rect = { left:0, top:0, right:_canvas.width, bottom:canvas.height,
+        var rect = { left:0, top:0, right:_canvas.width, bottom:_canvas.height,
             width:_canvas.width, height:_canvas.height };
 
         _origin = new Point((rect.left + rect.right)/2,
@@ -187,12 +189,12 @@ var CirclePack;
         
         for(var i = 0; i < count; i++){
             while(true){
-                var t = Math.random() * Math.PI;
+                var t = Math.random() * 2 * Math.PI;
                 var a = Math.random() * Math.PI;
                 
                 p = new Point(r * Math.sin(t) * Math.cos(a) + _origin.x,
                               r * Math.cos(t) + _origin.y , i);
-                
+
                 ok = true;
                 for(var pi = 0, piEnd = points.length; pi < piEnd; pi++){
                     if(points[pi].dist2(p) < min_dist2){
@@ -430,7 +432,15 @@ var CirclePack;
         },
         fixInitialRadius : function(){
             if(this.tmpRs.length > 0){
-                var r = average(this.tmpRs);
+                var valid = [];
+                for(var i = 0; i < this.tmpRs.length; i++){
+                    if(this.tmpRs[i] > 0) valid.push(this.tmpRs[i]);
+                }
+                if(valid.length == 0) { this.r = 0; return; }
+        
+                valid.sort(function(a, b){ return a - b; });
+                var r = valid[Math.floor(valid.length / 2)];
+        
                 var d = this.dist(_origin);
                 if(d + r > _radius) r = _radius - d;
                 this.r = r;
@@ -486,7 +496,7 @@ var CirclePack;
             var d3 = this.p3.dist(this.p1);
             var r1 = (d1 + d3 - d2) / 2;
             this.p1.tmpRs.push(r1);
-            this.p2.tmpRs.push(d2 - r1);
+            this.p2.tmpRs.push(d1 - r1);
             this.p3.tmpRs.push(d3 - r1);
         },
         // for circle packing : end
@@ -632,7 +642,7 @@ var CirclePack;
                         this.circles.splice(invalid_idx[i], 1);
                     }
                 } else if(invalid_idx.length > 0){
-                    this.circles.splice(invalid_idx[i], 1);
+                    this.circles.splice(invalid_idx[0], 1);
                 }
             }
         },
@@ -660,7 +670,7 @@ var CirclePack;
     function drawPolygon(points, strokeColor){
         if( ! strokeColor) strokeColor = "#ccc";
         
-        var ctx = _canvas.getContext("2d");
+        var ctx = _context;
         ctx.beginPath();
         ctx.moveTo(points[0].x, points[0].y);
         for(var i = 1; i < points.length; i++){
@@ -678,7 +688,7 @@ var CirclePack;
     function drawCircle(ctx, o, r, strokeColor){
         if( ! strokeColor) strokeColor = "#000";
         
-        //var ctx = _canvas.getContext("2d");
+        //var ctx = _context;
         ctx.beginPath();
         ctx.arc(o.x, o.y, r, 0, _WPI, true);
         ctx.lineWidth = _opt.stroke_width;
@@ -696,7 +706,7 @@ var CirclePack;
     function drawText(txt, x, y, color){
         if( ! color) color = "#000";
         
-        var ctx = _canvas.getContext("2d");
+        var ctx = _context;
         ctx.fillStyle = color;
         ctx.font= '10px sans-serif';
         ctx.fillText(txt, x, y);
@@ -804,7 +814,7 @@ var CirclePack;
         a.download = _EXPORT_SVG_FILENAME;
         var url;
         var winURL = window.URL || window.webkitURL;
-        if(winURL && winURL.createObject) {  //chrome
+        if(winURL && winURL.createObjectURL) {  //chrome
             url = winURL.createObjectURL(blob);
             a.href = url;
             a.click();

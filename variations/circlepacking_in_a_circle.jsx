@@ -11,8 +11,8 @@
 // This script is distributed under the MIT License.
 // See the LICENSE file for details.
 
-// ver.1.2.0+
-// in a circle variation ver.1.3.0
+// ver.1.4.0+
+// in a circle variation ver.1.4.0
 
 var _opt = {
     number_of_random_points : 50,  // in random point mode
@@ -228,7 +228,7 @@ function distributeRandomPointsInRect(frame, count, min_dist){
         if(i % 100 == 0) putText(i + " ");
         while(true){
             if(_g.cancel) break;
-            var t = Math.random() * Math.PI;
+            var t = Math.random() * 2 * Math.PI;
             var a = Math.random() * Math.PI;
             
             p = new Point(r * Math.sin(t) * Math.cos(a) + _origin.x,
@@ -475,7 +475,15 @@ Point.prototype = {
     },
     fixInitialRadius : function(){
         if(this.tmpRs.length > 0){
-            var r = average(this.tmpRs);
+            var valid = [];
+            for(var i = 0; i < this.tmpRs.length; i++){
+                if(this.tmpRs[i] > 0) valid.push(this.tmpRs[i]);
+            }
+            if(valid.length == 0) { this.r = 0; return; }
+    
+            valid.sort(function(a, b){ return a - b; });
+            var r = valid[Math.floor(valid.length / 2)];
+    
             var d = this.dist(_origin);
             if(d + r > _radius) r = _radius - d;
             this.r = r;
@@ -531,7 +539,7 @@ Triangle.prototype = {
         var d3 = this.p3.dist(this.p1);
         var r1 = (d1 + d3 - d2) / 2;
         this.p1.tmpRs.push(r1);
-        this.p2.tmpRs.push(d2 - r1);
+        this.p2.tmpRs.push(d1 - r1);
         this.p3.tmpRs.push(d3 - r1);
     },
     // for circle packing : end
@@ -677,7 +685,7 @@ Circle.prototype = {
                     this.circles.splice(invalid_idx[i], 1);
                 }
             } else if(invalid_idx.length > 0){
-                this.circles.splice(invalid_idx[i], 1);
+                this.circles.splice(invalid_idx[0], 1);
             }
         }
     },
